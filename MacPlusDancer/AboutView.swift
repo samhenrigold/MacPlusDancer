@@ -64,7 +64,7 @@ struct FAQView: View {
 
 struct FooterView: View {
     var body: some View {
-        Text("Made with \(Image(systemName: "heart.fill")) by [Sam Henri Gold](https://hachyderm.io/@samhenrigold/)")
+        Text("Made with \(Image(systemName: "heart.fill")) by [Sam Henri Gold](https://samhenri.gold)")
             .frame(maxWidth: .infinity)
             .foregroundStyle(.secondary)
     }
