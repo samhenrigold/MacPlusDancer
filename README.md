@@ -35,13 +35,17 @@ The dancer animations are from the original Microsoft Plus 2003 application. Thi
 ## FAQ
 
 **Q: Why should I use this?**
-A: You should not.
+
+You should not.
 
 **Q: Why can't I make Seth stop dancing?**
-A: We cannot legally answer that.
+
+We cannot legally answer that.
 
 **Q: Why is this app so big?**
-A: This app is 52 video files in a trench coat.
+
+This app is 52 video files in a trench coat.
 
 **Q: Is there dancer lore?**
-A: [Yes.](https://web.archive.org/web/20040609192145/http://www.microsoft.com/windows/plus/dme_more/moredancers.asp)
+
+[Yes.](https://web.archive.org/web/20040609192145/http://www.microsoft.com/windows/plus/dme_more/moredancers.asp)
