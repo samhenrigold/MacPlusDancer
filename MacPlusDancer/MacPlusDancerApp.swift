@@ -13,6 +13,8 @@ struct MacPlusDancerApp: App {
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismissWindow) private var dismissWindow
     
+    private let groupOrder = ["Modern", "Traditional", "Retro", "Seth", "Novelty"]
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -28,13 +30,19 @@ struct MacPlusDancerApp: App {
         .restorationBehavior(.disabled)
         .defaultPosition(.bottomTrailing)
         
-        MenuBarExtra(isInserted: .constant(true)) {
+        MenuBarExtra {
             Section {
                 Picker("Select Dancer", selection: $dancersModel.selectedDancer) {
-                    ForEach(dancersModel.dancers) { dancer in
-                        Text(dancer.name)
-                            .tag(dancer as Dancer?)
-                            .help(dancer.description ?? "")
+                    ForEach(sortedGroupKeys(), id: \.self) { group in
+                        Section(header: Text(group)) {
+                            ForEach(dancersModel.groupedDancers[group]!.sorted(by: { $0.name < $1.name })) { dancer in
+                                Button {} label: {
+                                    Text(dancer.name)
+                                    Text(dancer.general_dance_style ?? "")
+                                }
+                                .tag(dancer as Dancer?)
+                            }
+                        }
                     }
                 }
                 .onChange(of: dancersModel.selectedDancer) { oldValue, newValue in
@@ -42,13 +50,16 @@ struct MacPlusDancerApp: App {
                         dancersModel.selectedDancer = nil
                     }
                 }
-                .pickerStyle(.inline)
             }
             
             Section {
-                Button(dancersModel.toggleDancerButtonLabel) {
+                let isSeth = dancersModel.selectedDancer?.name == "Seth"
+                
+                Button(isSeth ? "Seth is not permitted to stop dancing" : dancersModel.toggleDancerButtonLabel) {
                     dancersModel.isDancing.toggle()
                 }
+                .disabled(isSeth)
+                .help(isSeth ? "If Seth stops dancing, he dies." : "")
             }
             
             Button("Quit") {
@@ -58,5 +69,16 @@ struct MacPlusDancerApp: App {
             Image(systemName: "figure.dance.circle")
                 .symbolVariant(dancersModel.isThereALittleDancerOnScreenAtThisVeryMoment ? .fill : .none)
         }
+    }
+    
+    private func sortedGroupKeys() -> [String] {
+        let allGroups = dancersModel.groupedDancers.keys
+        
+        // Separate specified groups and game groups
+        let specifiedGroups = groupOrder
+        let gameGroups = allGroups.filter { !groupOrder.contains($0) }.sorted()
+        
+        // Combine specified groups and game groups
+        return specifiedGroups + gameGroups
     }
 }

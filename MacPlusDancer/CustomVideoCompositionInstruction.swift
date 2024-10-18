@@ -7,6 +7,7 @@
 
 import AVFoundation
 
+/// A custom video composition instruction that specifies how to blend main and matte tracks.
 class CustomVideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProtocol {
     let timeRange: CMTimeRange
     let enablePostProcessing: Bool = false

@@ -14,27 +14,22 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            if let selectedDancer = dancersModel.selectedDancer {
-                if dancersModel.isDancing {
-                    TransparentVideoPlayer(playerManager: playerManager)
-                        .onChange(of: dancersModel.selectedDancer) { _, newDancer in
-                            if let newDancer = newDancer {
-                                Task {
-                                    await updateComposition(for: newDancer)
-                                }
+            if let selectedDancer = dancersModel.selectedDancer, dancersModel.isDancing {
+                TransparentVideoPlayer(playerManager: playerManager)
+                    .onChange(of: dancersModel.selectedDancer) { _, newDancer in
+                        if let newDancer {
+                            Task {
+                                await updateComposition(for: newDancer)
                             }
                         }
-                        .task {
-                            await updateComposition(for: selectedDancer)
-                        }
-                }
+                    }
+                    .task {
+                        await updateComposition(for: selectedDancer)
+                    }
             }
         }
         .allowsHitTesting(false)
         .frame(width: 320, height: 240)
-        .onAppear() {
-            dancersModel.loadDancers()
-        }
     }
     
     func updateComposition(for dancer: Dancer) async {

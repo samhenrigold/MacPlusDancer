@@ -7,44 +7,6 @@
 
 import SwiftUI
 import AVFoundation
-import Observation
-
-@Observable
-class VideoPlayerManager {
-    var player: AVPlayer?
-    var error: Error?
-    private var playerItemObserver: NSObjectProtocol?
-
-    func setupPlayer(with composition: CompositionCreator) async {
-        player?.pause()
-        player = nil
-        do {
-            let (playerItem, videoComposition) = try await composition.createComposition()
-            await MainActor.run {
-                playerItem.videoComposition = videoComposition
-                player = AVPlayer(playerItem: playerItem)
-                player?.play()
-            }
-
-            // Loop video
-            playerItemObserver = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: playerItem, queue: .main) { [weak self] _ in
-                self?.player?.seek(to: .zero)
-                self?.player?.play()
-            }
-        } catch {
-            await MainActor.run {
-                self.error = error
-            }
-            print("Error setting up player: \(error)")
-        }
-    }
-
-    deinit {
-        if let observer = playerItemObserver {
-            NotificationCenter.default.removeObserver(observer)
-        }
-    }
-}
 
 struct TransparentVideoPlayer: View {
     @Bindable var playerManager: VideoPlayerManager
@@ -66,8 +28,7 @@ struct VideoPlayerView: NSViewRepresentable {
     let player: AVPlayer?
     
     func makeNSView(context: Context) -> NSView {
-        let view = VideoPlayerNSView(player: player)
-        return view
+        VideoPlayerNSView(player: player)
     }
     
     func updateNSView(_ nsView: NSView, context: Context) {
@@ -75,22 +36,14 @@ struct VideoPlayerView: NSViewRepresentable {
             view.updatePlayer(player)
         }
     }
-    
-    static func dismantleNSView(_ nsView: NSView, coordinator: ()) {
-        if let view = nsView as? VideoPlayerNSView {
-            view.stopDisplayLink()
-        }
-    }
 }
 
 class VideoPlayerNSView: NSView {
     private var playerLayer: AVPlayerLayer?
-    private var displayLink: Any?
     
     init(player: AVPlayer?) {
         super.init(frame: .zero)
         setupPlayerLayer(with: player)
-        setupDisplayLink()
     }
     
     required init?(coder: NSCoder) {
@@ -107,23 +60,5 @@ class VideoPlayerNSView: NSView {
     
     func updatePlayer(_ player: AVPlayer?) {
         playerLayer?.player = player
-    }
-    
-    private func setupDisplayLink() {
-        displayLink = self.displayLink(target: self, selector: #selector(displayLinkCallback))
-    }
-    
-    @objc private func displayLinkCallback() {
-        playerLayer?.setNeedsDisplay()
-    }
-    
-    func stopDisplayLink() {
-        if let displayLink = displayLink as? CADisplayLink {
-            displayLink.invalidate()
-        }
-    }
-    
-    deinit {
-        stopDisplayLink()
     }
 }
