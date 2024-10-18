@@ -20,10 +20,12 @@ struct AboutView: View {
     
     let faqItems: [FAQItem] = [
         FAQItem(question: "What the hell is this?",
-                answer: "Thank you for asking. This is a deeply unofficial Mac port of the [Dancers from the Microsoft Plus bundle (2003)](https://hachyderm.io/@samhenrigold/113307328021293777).\n\nThey're a bunch of tiny divas that just dance around wherever you drag them. Stick 'em on top of your Google Docs. Make them poke out from behind TurboTax. Do whatever you want."),
+                answer: "Thank you for asking. This is a deeply unofficial Mac port of the [Dancers from Microsoft Plus 2003](https://hachyderm.io/@samhenrigold/113307328021293777).\n\nFaithful to the original, they’re a bunch of lil guys that dance around wherever you drag them. Stick ’em on top of your Google Docs. Make them poke out from behind TurboTax. Do whatever you want."),
+        FAQItem(question: "Open source?",
+                answer: "[Yeah](https://github.com/samhenrigold/MacPlusDancer). The videos are from the original Microsoft app. So. You know."),
         FAQItem(question: "Why should I use this?",
                 answer: "You should not."),
-        FAQItem(question: "Why can't I make Seth stop dancing?",
+        FAQItem(question: "Why can’t I make Seth stop dancing?",
                 answer: "I cannot legally answer that."),
         FAQItem(question: "Why is this app so big?",
                 answer: "This app is 52 video files in a trench coat.")
@@ -35,6 +37,7 @@ struct AboutView: View {
                 ForEach(faqItems, id: \.question) { item in
                     FAQView(item: item)
                 }
+                
                 Spacer()
                     .frame(height: 16)
                 
@@ -43,7 +46,7 @@ struct AboutView: View {
             .padding(.top, 32)
             .padding(.horizontal, 48)
         }
-        .frame(maxWidth: 480)
+        .frame(maxWidth: 530)
     }
 }
 
@@ -53,8 +56,7 @@ struct FAQView: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(item.question)
-                .font(.title3)
-                .bold()
+                .font(.headline)
             Text(item.answer)
         }
     }
