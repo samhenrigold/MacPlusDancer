@@ -6,18 +6,23 @@
 //
 
 import SwiftUI
+import AVKit
 
 struct ContentView: View {
+    @State private var playerManager = VideoPlayerManager()
+    @State private var composition = CompositionCreator(mainResourceName: "Amanda_L", matteResourceName: "Amanda_L_Matte")
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        ZStack {
+            TransparentVideoPlayer(playerManager: playerManager)
         }
-        .padding()
+        .frame(width: 320, height: 240)
+        .onAppear {
+            playerManager.setupPlayer(with: composition)
+        }
     }
 }
+
 
 #Preview {
     ContentView()
