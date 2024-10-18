@@ -10,24 +10,20 @@ import Observation
 
 @Observable
 class CompositionCreator {
-    var mainResourceName: String
-    var matteResourceName: String
+    var mainResourcePath: String
+    var matteResourcePath: String
     
-    init(mainResourceName: String, matteResourceName: String) {
-        self.mainResourceName = mainResourceName
-        self.matteResourceName = matteResourceName
+    init(mainResourcePath: String, matteResourcePath: String) {
+        self.mainResourcePath = mainResourcePath
+        self.matteResourcePath = matteResourcePath
     }
     
     func createComposition() async throws -> (AVPlayerItem, AVMutableVideoComposition) {
-                // Remove the extension from the filename
-        let mainResourceName = URL(fileURLWithPath: mainResourceName).deletingPathExtension().lastPathComponent
-        let matteResourceName = URL(fileURLWithPath: matteResourceName).deletingPathExtension().lastPathComponent
-        
-        guard let mainURL = Bundle.main.url(forResource: mainResourceName, withExtension: "mp4") else {
+        guard let mainURL = Bundle.main.url(forResource: (mainResourcePath as NSString).deletingPathExtension, withExtension: "mp4") else {
             throw NSError(domain: "CompositionCreator", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to find main video resource"])
         }
         
-        guard let matteURL = Bundle.main.url(forResource: matteResourceName, withExtension: "mp4") else {
+        guard let matteURL = Bundle.main.url(forResource: (matteResourcePath as NSString).deletingPathExtension, withExtension: "mp4") else {
             throw NSError(domain: "CompositionCreator", code: 3, userInfo: [NSLocalizedDescriptionKey: "Failed to find matte video resource"])
         }
         

@@ -47,7 +47,7 @@ class CustomVideoCompositor: NSObject, AVVideoCompositing {
                 let mainBuffer = request.sourceFrame(byTrackID: instruction.mainTrackID),
                 let matteBuffer = request.sourceFrame(byTrackID: instruction.matteTrackID)
             else {
-                request.finish(with: NSError(domain: "com.example", code: -1, userInfo: nil))
+                request.finish(with: NSError(domain: "gold.samhenri", code: -1, userInfo: nil))
                 return
             }
             
@@ -57,7 +57,7 @@ class CustomVideoCompositor: NSObject, AVVideoCompositing {
             let clearImage = CIImage(color: .clear).cropped(to: mainImage.extent)
             
             guard let blendFilter = self.blendFilter else {
-                request.finish(with: NSError(domain: "com.example", code: -2, userInfo: nil))
+                request.finish(with: NSError(domain: "gold.samhenri", code: -2, userInfo: nil))
                 return
             }
             
@@ -66,12 +66,12 @@ class CustomVideoCompositor: NSObject, AVVideoCompositing {
             blendFilter.setValue(matteImage, forKey: kCIInputMaskImageKey)
             
             guard let outputImage = blendFilter.outputImage else {
-                request.finish(with: NSError(domain: "com.example", code: -3, userInfo: nil))
+                request.finish(with: NSError(domain: "gold.samhenri", code: -3, userInfo: nil))
                 return
             }
             
             guard let outputBuffer = request.renderContext.newPixelBuffer() else {
-                request.finish(with: NSError(domain: "com.example", code: -4, userInfo: nil))
+                request.finish(with: NSError(domain: "gold.samhenri", code: -4, userInfo: nil))
                 return
             }
             

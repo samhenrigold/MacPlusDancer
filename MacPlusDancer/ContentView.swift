@@ -17,7 +17,7 @@ struct ContentView: View {
             if let selectedDancer = dancersModel.selectedDancer {
                 TransparentVideoPlayer(playerManager: playerManager)
                     .frame(width: 320, height: 240)
-                    .onChange(of: dancersModel.selectedDancer) { newDancer in
+                    .onChange(of: dancersModel.selectedDancer) { _, newDancer in
                         if let newDancer = newDancer {
                             Task {
                                 await updateComposition(for: newDancer)
@@ -25,9 +25,7 @@ struct ContentView: View {
                         }
                     }
                     .task {
-                        if let selectedDancer = dancersModel.selectedDancer {
-                            await updateComposition(for: selectedDancer)
-                        }
+                        await updateComposition(for: selectedDancer)
                     }
                     .allowsHitTesting(false)
             } else {
@@ -48,26 +46,16 @@ struct ContentView: View {
     }
 
     func updateComposition(for dancer: Dancer) async {
-        guard let assetsURL = Bundle.main.resourceURL?.appendingPathComponent("assets") else {
-            print("Assets directory not found")
-            return
-        }
-
         guard let regularVideoPath = dancer.regular_video?.converted_file,
               let matteVideoPath = dancer.matte_video?.converted_file else {
             print("No video files for dancer \(dancer.name)")
             return
         }
 
-        let mainURL = assetsURL.appendingPathComponent(regularVideoPath)
-        let matteURL = assetsURL.appendingPathComponent(matteVideoPath)
-
-        let composition = CompositionCreator(mainResourceName: mainURL.absoluteString, matteResourceName: matteURL.absoluteString)
-
+        let composition = CompositionCreator(mainResourcePath: regularVideoPath, matteResourcePath: matteVideoPath)
         await playerManager.setupPlayer(with: composition)
     }
 }
-
 
 #Preview {
     ContentView()
