@@ -9,18 +9,19 @@ import SwiftUI
 
 @main
 struct MacPlusDancerApp: App {
-    @State private var hovering = false
+    @State private var dancersModel = DancersModel()
     
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .containerBackground(.ultraThinMaterial.opacity(0.5), for: .window)
+                .environment(dancersModel)
+//                .containerBackground(.ultraThinMaterial.opacity(0.5), for: .window)
                 .windowMinimizeBehavior(.disabled)
                 .windowResizeBehavior(.disabled)
                 .windowFullScreenBehavior(.disabled)
         }
         .windowLevel(.floating)
-        .windowStyle(.plain)
+//        .windowStyle(.plain)
         .windowResizability(.contentSize)
         .windowBackgroundDragBehavior(.enabled)
         .restorationBehavior(.disabled)

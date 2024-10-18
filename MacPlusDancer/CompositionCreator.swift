@@ -19,8 +19,17 @@ class CompositionCreator {
     }
     
     func createComposition() async throws -> (AVPlayerItem, AVMutableVideoComposition) {
-        let mainURL = Bundle.main.url(forResource: mainResourceName, withExtension: "mp4")!
-        let matteURL = Bundle.main.url(forResource: matteResourceName, withExtension: "mp4")!
+                // Remove the extension from the filename
+        let mainResourceName = URL(fileURLWithPath: mainResourceName).deletingPathExtension().lastPathComponent
+        let matteResourceName = URL(fileURLWithPath: matteResourceName).deletingPathExtension().lastPathComponent
+        
+        guard let mainURL = Bundle.main.url(forResource: mainResourceName, withExtension: "mp4") else {
+            throw NSError(domain: "CompositionCreator", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to find main video resource"])
+        }
+        
+        guard let matteURL = Bundle.main.url(forResource: matteResourceName, withExtension: "mp4") else {
+            throw NSError(domain: "CompositionCreator", code: 3, userInfo: [NSLocalizedDescriptionKey: "Failed to find matte video resource"])
+        }
         
         let mainAsset = AVURLAsset(url: mainURL)
         let matteAsset = AVURLAsset(url: matteURL)

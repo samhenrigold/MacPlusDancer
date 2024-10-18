@@ -7,14 +7,17 @@
 
 import SwiftUI
 import AVFoundation
+import Observation
 
 @Observable
 class VideoPlayerManager {
     var player: AVPlayer?
     var error: Error?
     private var playerItemObserver: NSObjectProtocol?
-    
+
     func setupPlayer(with composition: CompositionCreator) async {
+        player?.pause()
+        player = nil
         do {
             let (playerItem, videoComposition) = try await composition.createComposition()
             await MainActor.run {
@@ -22,7 +25,7 @@ class VideoPlayerManager {
                 player = AVPlayer(playerItem: playerItem)
                 player?.play()
             }
-            
+
             // Loop video
             playerItemObserver = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: playerItem, queue: .main) { [weak self] _ in
                 self?.player?.seek(to: .zero)
@@ -35,7 +38,7 @@ class VideoPlayerManager {
             print("Error setting up player: \(error)")
         }
     }
-    
+
     deinit {
         if let observer = playerItemObserver {
             NotificationCenter.default.removeObserver(observer)
@@ -43,16 +46,17 @@ class VideoPlayerManager {
     }
 }
 
-
 struct TransparentVideoPlayer: View {
     @Bindable var playerManager: VideoPlayerManager
-    
+
     var body: some View {
         Group {
             if let error = playerManager.error {
                 Text("Error: \(error.localizedDescription)")
+            } else if let player = playerManager.player {
+                VideoPlayerView(player: player)
             } else {
-                VideoPlayerView(player: playerManager.player)
+                Text("Loading...")
             }
         }
     }
