@@ -11,47 +11,39 @@ import AVKit
 struct ContentView: View {
     @Environment(DancersModel.self) private var dancersModel
     @State private var playerManager = VideoPlayerManager()
-
+    
     var body: some View {
-        VStack {
+        ZStack {
             if let selectedDancer = dancersModel.selectedDancer {
-                TransparentVideoPlayer(playerManager: playerManager)
-                    .frame(width: 320, height: 240)
-                    .onChange(of: dancersModel.selectedDancer) { _, newDancer in
-                        if let newDancer = newDancer {
-                            Task {
-                                await updateComposition(for: newDancer)
+                if dancersModel.isDancing {
+                    TransparentVideoPlayer(playerManager: playerManager)
+                        .onChange(of: dancersModel.selectedDancer) { _, newDancer in
+                            if let newDancer = newDancer {
+                                Task {
+                                    await updateComposition(for: newDancer)
+                                }
                             }
                         }
-                    }
-                    .task {
-                        await updateComposition(for: selectedDancer)
-                    }
-                    .allowsHitTesting(false)
-            } else {
-                Text("Please select a dancer")
-            }
-
-            List(dancersModel.dancers) { dancer in
-                Button(action: {
-                    dancersModel.selectedDancer = dancer
-                }) {
-                    Text(dancer.name)
+                        .task {
+                            await updateComposition(for: selectedDancer)
+                        }
                 }
             }
         }
-        .onAppear {
+        .allowsHitTesting(false)
+        .frame(width: 320, height: 240)
+        .onAppear() {
             dancersModel.loadDancers()
         }
     }
-
+    
     func updateComposition(for dancer: Dancer) async {
         guard let regularVideoPath = dancer.regular_video?.converted_file,
               let matteVideoPath = dancer.matte_video?.converted_file else {
             print("No video files for dancer \(dancer.name)")
             return
         }
-
+        
         let composition = CompositionCreator(mainResourcePath: regularVideoPath, matteResourcePath: matteVideoPath)
         await playerManager.setupPlayer(with: composition)
     }

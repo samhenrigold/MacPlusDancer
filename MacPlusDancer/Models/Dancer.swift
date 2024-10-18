@@ -11,7 +11,7 @@ struct DancersData: Codable {
     let dancers: [Dancer]
 }
 
-struct Dancer: Codable, Identifiable, Equatable {
+struct Dancer: Codable, Identifiable, Equatable, Hashable {
     let id: UUID
     let name: String
     let general_dance_style: String?
@@ -47,9 +47,12 @@ struct Dancer: Codable, Identifiable, Equatable {
                lhs.matte_video == rhs.matte_video &&
                lhs.regular_video == rhs.regular_video
     }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }
 
-
-struct Video: Codable, Equatable {
+struct Video: Codable, Equatable, Hashable {
     let converted_file: String
 }

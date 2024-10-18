@@ -12,6 +12,15 @@ import Observation
 class DancersModel {
     var dancers: [Dancer] = []
     var selectedDancer: Dancer?
+    var isDancing: Bool = true
+    
+    var toggleDancerButtonLabel: String {
+        self.isDancing ? "Stop Dancing" : "Start Dancing"
+    }
+    
+    var isThereALittleDancerOnScreenAtThisVeryMoment: Bool {
+        self.selectedDancer != nil && self.isDancing
+    }
 
     func loadDancers() {
         if let url = Bundle.main.url(forResource: "Metadata", withExtension: "json") {
@@ -19,7 +28,7 @@ class DancersModel {
                 let data = try Data(contentsOf: url)
                 let decoder = JSONDecoder()
                 let dancersData = try decoder.decode(DancersData.self, from: data)
-                dancers = dancersData.dancers
+                dancers = dancersData.dancers.sorted { $0.name < $1.name }
                 selectedDancer = dancers.first
             } catch {
                 print("Failed to load or parse Metadata.json: \(error)")
