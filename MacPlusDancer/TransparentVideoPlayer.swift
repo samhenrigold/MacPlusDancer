@@ -11,41 +11,61 @@ import AVFoundation
 @Observable
 class VideoPlayerManager {
     var player: AVPlayer?
+    var error: Error?
+    private var playerItemObserver: NSObjectProtocol?
     
-    func setupPlayer(with composition: CompositionCreator) {
-        let (playerItem, videoComposition) = composition.createComposition()
-        playerItem.videoComposition = videoComposition
-        player = AVPlayer(playerItem: playerItem)
-        player?.play()
-        
-        // Loop video
-        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: playerItem, queue: .main) { [weak self] _ in
-            self?.player?.seek(to: .zero)
-            self?.player?.play()
+    func setupPlayer(with composition: CompositionCreator) async {
+        do {
+            let (playerItem, videoComposition) = try await composition.createComposition()
+            await MainActor.run {
+                playerItem.videoComposition = videoComposition
+                player = AVPlayer(playerItem: playerItem)
+                player?.play()
+            }
+            
+            // Loop video
+            playerItemObserver = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: playerItem, queue: .main) { [weak self] _ in
+                self?.player?.seek(to: .zero)
+                self?.player?.play()
+            }
+        } catch {
+            await MainActor.run {
+                self.error = error
+            }
+            print("Error setting up player: \(error)")
         }
     }
     
-    func stopDisplayLink() {
-        // Implement if needed
+    deinit {
+        if let observer = playerItemObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
     }
 }
 
+
 struct TransparentVideoPlayer: View {
     @Bindable var playerManager: VideoPlayerManager
-
+    
     var body: some View {
-        VideoPlayerView(player: playerManager.player)
+        Group {
+            if let error = playerManager.error {
+                Text("Error: \(error.localizedDescription)")
+            } else {
+                VideoPlayerView(player: playerManager.player)
+            }
+        }
     }
 }
 
 struct VideoPlayerView: NSViewRepresentable {
     let player: AVPlayer?
-
+    
     func makeNSView(context: Context) -> NSView {
         let view = VideoPlayerNSView(player: player)
         return view
     }
-
+    
     func updateNSView(_ nsView: NSView, context: Context) {
         if let view = nsView as? VideoPlayerNSView {
             view.updatePlayer(player)
@@ -61,18 +81,18 @@ struct VideoPlayerView: NSViewRepresentable {
 
 class VideoPlayerNSView: NSView {
     private var playerLayer: AVPlayerLayer?
-    private var displayLink: CVDisplayLink?
-
+    private var displayLink: Any?
+    
     init(player: AVPlayer?) {
         super.init(frame: .zero)
         setupPlayerLayer(with: player)
         setupDisplayLink()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     private func setupPlayerLayer(with player: AVPlayer?) {
         playerLayer = AVPlayerLayer(player: player)
         playerLayer?.videoGravity = .resizeAspect
@@ -80,33 +100,25 @@ class VideoPlayerNSView: NSView {
         layer = playerLayer
         wantsLayer = true
     }
-
+    
     func updatePlayer(_ player: AVPlayer?) {
         playerLayer?.player = player
     }
-
+    
     private func setupDisplayLink() {
-        CVDisplayLinkCreateWithActiveCGDisplays(&displayLink)
-        CVDisplayLinkSetOutputCallback(displayLink!, { (displayLink, inNow, inOutputTime, flagsIn, flagsOut, displayLinkContext) -> CVReturn in
-            let view = Unmanaged<VideoPlayerNSView>.fromOpaque(displayLinkContext!).takeUnretainedValue()
-            view.displayLinkCallback(inOutputTime: inOutputTime)
-            return kCVReturnSuccess
-        }, Unmanaged.passUnretained(self).toOpaque())
-        CVDisplayLinkStart(displayLink!)
+        displayLink = self.displayLink(target: self, selector: #selector(displayLinkCallback))
     }
-
-    private func displayLinkCallback(inOutputTime: UnsafePointer<CVTimeStamp>) {
-        DispatchQueue.main.async { [weak self] in
-            self?.playerLayer?.setNeedsDisplay()
-        }
+    
+    @objc private func displayLinkCallback() {
+        playerLayer?.setNeedsDisplay()
     }
-
+    
     func stopDisplayLink() {
-        if let displayLink = displayLink {
-            CVDisplayLinkStop(displayLink)
+        if let displayLink = displayLink as? CADisplayLink {
+            displayLink.invalidate()
         }
     }
-
+    
     deinit {
         stopDisplayLink()
     }

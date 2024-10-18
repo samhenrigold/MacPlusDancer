@@ -13,10 +13,10 @@ class CustomVideoCompositionInstruction: NSObject, AVVideoCompositionInstruction
     let containsTweening: Bool = false
     let requiredSourceTrackIDs: [NSValue]?
     let passthroughTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
-
+    
     let mainTrackID: CMPersistentTrackID
     let matteTrackID: CMPersistentTrackID
-
+    
     init(timeRange: CMTimeRange, mainTrackID: CMPersistentTrackID, matteTrackID: CMPersistentTrackID) {
         self.timeRange = timeRange
         self.mainTrackID = mainTrackID

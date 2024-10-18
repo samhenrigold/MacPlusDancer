@@ -18,45 +18,60 @@ class CompositionCreator {
         self.matteResourceName = matteResourceName
     }
     
-    func createComposition() -> (AVPlayerItem, AVMutableVideoComposition) {
+    func createComposition() async throws -> (AVPlayerItem, AVMutableVideoComposition) {
         let mainURL = Bundle.main.url(forResource: mainResourceName, withExtension: "mp4")!
         let matteURL = Bundle.main.url(forResource: matteResourceName, withExtension: "mp4")!
-
+        
         let mainAsset = AVURLAsset(url: mainURL)
         let matteAsset = AVURLAsset(url: matteURL)
-
+        
+        let (composition, mainTrack, matteTrack) = try await createMutableComposition(mainAsset: mainAsset, matteAsset: matteAsset)
+        let videoComposition = try await createVideoComposition(composition: composition, mainTrack: mainTrack, matteTrack: matteTrack)
+        
+        return await MainActor.run {
+            let playerItem = AVPlayerItem(asset: composition)
+            return (playerItem, videoComposition)
+        }
+    }
+    
+    private func createMutableComposition(mainAsset: AVURLAsset, matteAsset: AVURLAsset) async throws -> (AVMutableComposition, AVMutableCompositionTrack, AVMutableCompositionTrack) {
         let composition = AVMutableComposition()
+        
         guard
             let mainTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid),
             let matteTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid),
-            let mainAssetTrack = mainAsset.tracks(withMediaType: .video).first,
-            let matteAssetTrack = matteAsset.tracks(withMediaType: .video).first
+            let mainAssetTrack = try await mainAsset.loadTracks(withMediaType: .video).first,
+            let matteAssetTrack = try await matteAsset.loadTracks(withMediaType: .video).first
         else {
-            fatalError("Failed to load video tracks")
+            throw NSError(domain: "CompositionCreator", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to load video tracks"])
         }
-
-        do {
-            try mainTrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: mainAsset.duration), of: mainAssetTrack, at: .zero)
-            try matteTrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: matteAsset.duration), of: matteAssetTrack, at: .zero)
-        } catch {
-            fatalError("Failed to insert video tracks into composition: \(error)")
-        }
-
+        
+        let mainDuration = try await mainAsset.load(.duration)
+        let matteDuration = try await matteAsset.load(.duration)
+        
+        let duration = min(mainDuration, matteDuration)
+        
+        try mainTrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: duration), of: mainAssetTrack, at: .zero)
+        try matteTrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: duration), of: matteAssetTrack, at: .zero)
+        
+        return (composition, mainTrack, matteTrack)
+    }
+    
+    private func createVideoComposition(composition: AVMutableComposition, mainTrack: AVMutableCompositionTrack, matteTrack: AVMutableCompositionTrack) async throws -> AVMutableVideoComposition {
         let videoComposition = AVMutableVideoComposition()
         videoComposition.customVideoCompositorClass = CustomVideoCompositor.self
         videoComposition.renderSize = mainTrack.naturalSize
-
-        // Set frame duration based on the video's frame rate
-        let nominalFrameRate = mainAssetTrack.nominalFrameRate
+        
+        let nominalFrameRate = try await mainTrack.load(.nominalFrameRate)
         videoComposition.frameDuration = CMTime(value: 1, timescale: Int32(nominalFrameRate))
-
+        
         let instruction = CustomVideoCompositionInstruction(
             timeRange: CMTimeRangeMake(start: .zero, duration: composition.duration),
             mainTrackID: mainTrack.trackID,
             matteTrackID: matteTrack.trackID
         )
         videoComposition.instructions = [instruction]
-
-        return (AVPlayerItem(asset: composition), videoComposition)
+        
+        return videoComposition
     }
 }

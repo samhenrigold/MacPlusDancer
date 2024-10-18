@@ -11,14 +11,14 @@ import AVKit
 struct ContentView: View {
     @State private var playerManager = VideoPlayerManager()
     @State private var composition = CompositionCreator(mainResourceName: "Amanda_L", matteResourceName: "Amanda_L_Matte")
-
+    
     var body: some View {
         ZStack {
             TransparentVideoPlayer(playerManager: playerManager)
         }
         .frame(width: 320, height: 240)
-        .onAppear {
-            playerManager.setupPlayer(with: composition)
+        .task {
+            await playerManager.setupPlayer(with: composition)
         }
     }
 }
