@@ -5,6 +5,7 @@ Original product description [from 2003](https://web.archive.org/web/20040610092
 > 
 > Get to know Amanda, Cobey, and all the other Plus! dancers by reading their bios online, and then download more of your favorite dancers to your computer.
 
+
 MacPlusDancer is a delightfully nostalgic macOS app that brings back the dancers from Microsoft Plus! (their exclamation point, not mine).
 
 - Choose from a variety of dancers with different styles
@@ -22,16 +23,14 @@ MacPlusDancer is a delightfully nostalgic macOS app that brings back the dancers
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-NOTE: If you submit a PR to make Seth stop dancing, it will be rejected.
+_NOTE: If you submit a PR to make Seth stop dancing, it will be rejected._
 
 ## Legal Note
 
 The dancer animations are from the original Microsoft Plus 2003 application. This project is not affiliated with or endorsed by Microsoft. It's a fan-made port created for educational and nostalgic purposes.
 
 ## Credits
-
-Created with ❤️ by [Sam Henri Gold](https://hachyderm.io/@samhenrigold/).
-Also [this website](http://jfsworld.net/plus_dancers.htm) from the early 2000s was very useful in building this app.
+[This website](http://jfsworld.net/plus_dancers.htm) from the early 2000s was very useful in building this app. Shoutout to whoever made that website, I suppose.
 
 ## FAQ
 
@@ -43,3 +42,6 @@ A: We cannot legally answer that.
 
 **Q: Why is this app so big?**
 A: This app is 52 video files in a trench coat.
+
+**Q: Is there dancer lore?**
+A: [Yes.](https://web.archive.org/web/20040609192145/http://www.microsoft.com/windows/plus/dme_more/moredancers.asp)
