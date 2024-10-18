@@ -1,5 +1,7 @@
 # MacPlusDancer
 
+https://github.com/user-attachments/assets/c960a018-b9ec-44f9-b971-cfde95a512fb
+
 Original product description [from 2003](https://web.archive.org/web/20040610092815/http://www.microsoft.com/windows/Plus/dme/music.asp#dancer):
 > Your desktop becomes a virtual dance floor as amazingly lifelike, 3-D figures dance to the beat of your favorite tunes. Choose from a variety of dancers and dance styles, including hip-hop, disco, salsa, and more.
 > 
