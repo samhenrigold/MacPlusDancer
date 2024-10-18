@@ -30,12 +30,26 @@ struct MacPlusDancerApp: App {
         .restorationBehavior(.disabled)
         .defaultPosition(.bottomTrailing)
         
+        WindowGroup("About", id: "about") {
+            AboutView()
+                .windowMinimizeBehavior(.disabled)
+                .windowResizeBehavior(.disabled)
+                .windowFullScreenBehavior(.disabled)
+                .containerBackground(.thickMaterial, for: .window)
+        }
+        .windowStyle(.hiddenTitleBar)
+        .windowResizability(.contentSize)
+        .windowBackgroundDragBehavior(.enabled)
+        .restorationBehavior(.disabled)
+        .defaultPosition(.center)
+        
         MenuBarExtra {
             Section {
                 Picker("Select Dancer", selection: $dancersModel.selectedDancer) {
                     ForEach(sortedGroupKeys(), id: \.self) { group in
                         Section(header: Text(group)) {
                             ForEach(dancersModel.groupedDancers[group]!.sorted(by: { $0.name < $1.name })) { dancer in
+//                                Using a button here since it gives us that stacked key/value lockup layout in menu contexts
                                 Button {} label: {
                                     Text(dancer.name)
                                     Text(dancer.general_dance_style ?? "")
@@ -45,10 +59,8 @@ struct MacPlusDancerApp: App {
                         }
                     }
                 }
-                .onChange(of: dancersModel.selectedDancer) { oldValue, newValue in
-                    if oldValue == newValue {
-                        dancersModel.selectedDancer = nil
-                    }
+                .onChange(of: dancersModel.selectedDancer) {
+                    dancersModel.isDancing = true
                 }
             }
             
@@ -62,8 +74,14 @@ struct MacPlusDancerApp: App {
                 .help(isSeth ? "If Seth stops dancing, he dies." : "")
             }
             
-            Button("Quit") {
-                NSApplication.shared.terminate(nil)
+            Section {
+                Button("???") {
+                    openWindow(id: "about")
+                }
+                
+                Button("Quit") {
+                    NSApplication.shared.terminate(nil)
+                }
             }
         } label: {
             Image(systemName: "figure.dance.circle")
