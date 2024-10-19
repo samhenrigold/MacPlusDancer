@@ -251,7 +251,7 @@
 				CODE_SIGN_ENTITLEMENTS = MacPlusDancer/MacPlusDancer.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"MacPlusDancer/Preview Content\"";
 				DEVELOPMENT_TEAM = CG56CG5WCQ;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -263,6 +263,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = gold.samhenri.MacPlusDancer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -279,7 +280,7 @@
 				CODE_SIGN_ENTITLEMENTS = MacPlusDancer/MacPlusDancer.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"MacPlusDancer/Preview Content\"";
 				DEVELOPMENT_TEAM = CG56CG5WCQ;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -291,6 +292,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = gold.samhenri.MacPlusDancer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
