@@ -1,5 +1,7 @@
 # MacPlusDancer
 
+https://github.com/user-attachments/assets/c960a018-b9ec-44f9-b971-cfde95a512fb
+
 Original product description [from 2003](https://web.archive.org/web/20040610092815/http://www.microsoft.com/windows/Plus/dme/music.asp#dancer):
 > Your desktop becomes a virtual dance floor as amazingly lifelike, 3-D figures dance to the beat of your favorite tunes. Choose from a variety of dancers and dance styles, including hip-hop, disco, salsa, and more.
 > 
@@ -35,13 +37,17 @@ The dancer animations are from the original Microsoft Plus 2003 application. Thi
 ## FAQ
 
 **Q: Why should I use this?**
-A: You should not.
+
+You should not.
 
 **Q: Why can't I make Seth stop dancing?**
-A: We cannot legally answer that.
+
+We cannot legally answer that.
 
 **Q: Why is this app so big?**
-A: This app is 52 video files in a trench coat.
+
+This app is 52 video files in a trench coat.
 
 **Q: Is there dancer lore?**
-A: [Yes.](https://web.archive.org/web/20040609192145/http://www.microsoft.com/windows/plus/dme_more/moredancers.asp)
+
+[Yes.](https://web.archive.org/web/20040609192145/http://www.microsoft.com/windows/plus/dme_more/moredancers.asp)
